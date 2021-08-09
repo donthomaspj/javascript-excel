@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Document</title>
+</head>
+<body >
+<div id="idRowAndColumn">
+<form>
+  <label >Row:</label><br>
+  <input type="text" id="idRow" value=5><br>
+  <label >Column</label><br>
+  <input type="text" id="idColumn" value=5><br><br>
+</form>
+  
+<button onclick="myFunction()" id="tryBtn">Submit</button><br><br>
+</div><br><br>
+<p id="idNotification" style="color: red;"></p>
+<div id="wrap">
+    
+    <div id="textInput">
+        <input type="text" id="idEdit">
+    </div><br>
+    <div id="buttons">
+        <button onclick = "fnEnter()">Enter</button>
+        <button onclick = "fnClear()">Clear</button>
+    </div>
+</div>
+    <script>
+        document.getElementById("idEdit").addEventListener("focus", ()=>{focused(idOut)})
+        document.getElementById("idEdit").addEventListener("focusout", ()=>{changeFocus(idOut)})
+
+        var count = 0;
+        var idOut;
+        var aSumEquation =[];
+        var aAllSumEquation=[];
+        var countAllEquation=0;
+
+        function focused(idT) {
+            if(idT !== undefined){
+                document.getElementById(idT).parentElement.style.border = '3px green solid';    //adds style on focus
+            }
+        }
+
+        function changeFocus(idT) {
+            if(idT !== undefined) {
+                document.getElementById(idT).parentElement.style.border = '1px black solid';    //revert back to normal
+            }
+        }
+
+        function myFunction(){
+            
+
+            console.log(document.getElementById("idRow").value);
+            var row = document.getElementById("idRow").value;
+            var column = document.getElementById("idColumn").value;
+            console.log(row+ " " + column);
+            var body = document.getElementsByTagName("body")[0];    
+            var table = document.createElement('TABLE');    //table declare
+            var tb1B = document.createElement('TBODY');     //body declare
+
+            // document.getElementById("tryBtn").disabled = true;
+            table.innerHTML = "";
+            table.appendChild(tb1B);
+            
+            //loop for row
+            for(var i=0;i<=row;i++)
+            {
+                var tr = document.createElement('TR');
+                tb1B.appendChild(tr);
+                //loop for column
+                for(var j =0; j<=column;j++)
+                {
+                    var td = document.createElement('TD');
+                    //condition for row
+                    if(j === 0 && i !== 0){
+                        var content = document.createTextNode(i);
+                        td.appendChild(content);
+                    }
+
+                    if(i === 0 && j !== 0) {
+                        var alphabet = String.fromCharCode(j + 65 - 1);
+                        var content = document.createTextNode(alphabet);
+                        td.appendChild(content);
+                    }
+
+                    if(i === 0 || j === 0)
+                    {
+
+                    }
+                    else{
+                        var idAlphabet = nextChar(j-1);
+                        var idValue = idAlphabet+i;
+                        var nwText =document.createElement("textArea");
+
+                        nwText.setAttribute("readonly", true);
+                        nwText.setAttribute("class", "spreadSheet");
+                        nwText.id =idValue;
+
+                        nwText.onclick = function() {
+                            fnText(this.value, this.id);
+                        };
+
+                        nwText.addEventListener("focus", function() {
+                            focused(this.id);
+                        });
+
+                        nwText.addEventListener("focusout", function() {
+                            changeFocus(this.id);
+                        });
+
+                        td.appendChild(nwText);
+                    }
+                    tr.appendChild(td);
+                }
+            }
+            body.appendChild(table);
+            var tt= "a2";
+            console.log(document.getElementById(tt).value+" here");
+            document.getElementById(tt).value ="";
+            document.getElementById("idRowAndColumn").innerHTML="";
+        }
+
+
+        //fn for editing the text
+        function fnText(valueT, idT)
+        {
+            count = 1;
+            console.log(idT);
+            idOut = idT;
+            if(aSumEquation[idT]){
+                document.getElementById("idEdit").value = aSumEquation[idT]; //When will this become true
+            }
+            else{
+                document.getElementById("idEdit").value = valueT;
+            }
+            document.getElementById("idNotification").innerHTML="Enter the Value below and click Enter button:";
+        }
+
+        function test(){
+            alert("here");
+        }
+
+        // for alphabet from numbers
+        function nextChar(value) {
+            var a ='a';
+            return String.fromCharCode(a.charCodeAt(0) + value);
+        }
+
+        function charIncrementBy1(firstChar,value)
+        {
+            return String.fromCharCode(firstChar.charCodeAt(0) + value);
+        }
+
+
+
+        
+        //fn for enter button
+        function fnEnter(){  
+
+                
+                var valueFromEnter = document.getElementById("idEdit").value; 
+                if(valueFromEnter == "")
+                {
+                    //document.getElementById("idNotification").innerHTML="Enter the Value below:";
+                    return;
+                }
+
+
+                console.log(idOut+" 123");
+                var idEnterValue = (document.getElementById("idEdit").value).toLowerCase();
+                var idTablePosition = document.getElementById(idOut);
+
+                if(idEnterValue === "") return;
+
+                //checking the sum equation
+                if(idEnterValue.charAt(0)=="=" && idEnterValue.charAt(1)=="s" && idEnterValue.charAt(2)=="u")
+                {   
+                    fnSum();
+
+                    function fnSum(){
+                        var firstId1 = idEnterValue.charAt(5);
+                        var firstId2 = idEnterValue.charAt(6);
+                        var firstId =  idEnterValue.charAt(5)+idEnterValue.charAt(6);
+
+                        var lastId1 =  idEnterValue.charAt(8);
+                        var lastId2 =  idEnterValue.charAt(9);
+                        var lastId =  idEnterValue.charAt(8)+idEnterValue.charAt(9);
+                        console.log(firstId+" 1st");
+                        
+                        var totalValue = 0;
+                        
+                        //same column
+                        if(firstId1 == lastId1)
+                        {
+                            for(var i=firstId2; i<=lastId2; i++)
+                            {
+                                var id = firstId1+i;
+                                var idValue = document.getElementById(id);
+                                console.log(idValue.value+" values");
+                                totalValue = totalValue + parseInt(idValue.value);
+                            }
+                        }
+                        //same row 
+                        if(firstId2 == lastId2)
+                        {
+                            console.log("here on if");
+                            var countApha = 0;
+                            
+                            do{
+                                var idApha = charIncrementBy1(firstId1, countApha); 
+                                var id = idApha + firstId2;
+                                var idValue = document.getElementById(id);
+                                console.log("here on if "+idApha+firstId1);
+                                totalValue = totalValue + parseInt(idValue.value);
+                                countApha++;
+                            }while(idApha!= lastId1);
+                        }
+
+                        idTablePosition.value = totalValue;
+                        aAllSumEquation[countAllEquation]= idEnterValue+idOut;
+                        countAllEquation++;
+                        console.log(aAllSumEquation);
+                    }
+                    
+                }else{
+                    idTablePosition.value = idEnterValue;
+                    console.log("else");
+                    fnCheckEquation(idOut);
+                }
+
+
+                console.log(idEnterValue+"IMhere");
+                if(count == 1){
+                    //console.log("inif");
+                   // idTablePosition.value = idEnterValue;
+                }
+                count =0;
+                aSumEquation[idOut]= idEnterValue;
+                document.getElementById(idOut).classList.remove("on");
+                document.getElementById("idNotification").innerHTML="New value updated!";
+            }
+        
+        //for checking any equation on htis 
+        function fnCheckEquation(currentId)
+        {
+            console.log("fn "+ currentId);
+            var idCurrentValue = document.getElementById(currentId).value;
+            console.log(idCurrentValue+" values");
+
+            var countNew =0;
+            for(var i=0; i<aAllSumEquation.length;i++)
+            {
+                console.log(aAllSumEquation[i]+ " eqn"+ i);
+                
+                var firstId1 = aAllSumEquation[i].charAt(5);
+                var firstId2 = aAllSumEquation[i].charAt(6);
+                var firstId =  aAllSumEquation[i].charAt(5) +aAllSumEquation[i].charAt(6);
+
+                var lastId1 =  aAllSumEquation[i].charAt(8);
+                var lastId2 =  aAllSumEquation[i].charAt(9);
+                var lastId =  aAllSumEquation[i].charAt(8)+aAllSumEquation[i].charAt(9);
+                console.log(firstId+" 1st"); 
+
+                
+                if(firstId1 == lastId1)
+                {
+                    for(var j=firstId2; j<=lastId2; j++)
+                    {
+                        var id = firstId1+j;
+                        if(currentId == id)
+                        {
+                            console.log(currentId + "==" + id);
+                            console.log(aAllSumEquation[i]+ "from here");
+                            fnSumChecking(aAllSumEquation[i]);
+                            countNew++;
+                        }
+                    }
+                    
+                }
+
+                if(firstId2 == lastId2)
+                {
+                    console.log("here on if");
+                    
+                    var countApha=0;
+                    
+                    do{
+                        var idApha = charIncrementBy1(firstId1, countApha); 
+                        var id = idApha + firstId2;
+                        
+                        if(currentId == id)
+                        {
+                            console.log(currentId + "==" + id);
+                            fnSumChecking(aAllSumEquation[i]);
+                            countNew++;
+                        }
+                        countApha++;
+                    }while(idApha!= lastId1);
+                        
+                        
+                }
+            }
+            console.log(countNew+" total");
+            countNew = 0;
+        }
+
+        function fnSumChecking(currentIdAndEquation){
+            var idOutput = currentIdAndEquation.charAt(11)+currentIdAndEquation.charAt(12);
+            var idOutputLocation = document.getElementById(idOutput);
+
+                    var firstId1 = currentIdAndEquation.charAt(5);
+                    var firstId2 = currentIdAndEquation.charAt(6);
+                    var firstId =  currentIdAndEquation.charAt(5)+currentIdAndEquation.charAt(6);
+
+                    var lastId1 =  currentIdAndEquation.charAt(8);
+                    var lastId2 =  currentIdAndEquation.charAt(9);
+                    var lastId =  currentIdAndEquation.charAt(8)+currentIdAndEquation.charAt(9);
+                    console.log(firstId+" 1st");
+
+                    
+                    var totalValue = 0;
+                    
+                    //same column
+                    if(firstId1 == lastId1)
+                    {
+                        for(var i=firstId2; i<=lastId2; i++)
+                        {
+                            var id = firstId1+i;
+                            var idValue = document.getElementById(id);
+                            console.log(idValue.value+" values");
+                            totalValue = totalValue + parseInt(idValue.value);
+                        }
+                    }
+                    //same row 
+                    if(firstId2 == lastId2)
+                    {
+                        console.log("here on if");
+                        
+                        var countApha=0;
+                        
+                        do{
+
+                            var idApha = charIncrementBy1(firstId1, countApha); 
+                            var id = idApha + firstId2;
+                            var idValue = document.getElementById(id);
+                            console.log("here on if "+idApha+firstId1);
+                            totalValue = totalValue + parseInt(idValue.value);
+                            countApha++;
+                        }while(idApha!= lastId1);
+                        
+                        //idOutputLocation.value = totalValue;
+                    }
+
+                    idOutputLocation.value = totalValue;
+
+            console.log(currentIdAndEquation+ " here id eqn "+idOutput)
+        }
+        
+
+        function fnClear(){
+            document.getElementById("idEdit").value ="";
+        }
+    </script>
+</body>
+</html>
